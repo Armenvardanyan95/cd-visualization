@@ -1,13 +1,11 @@
 import {
-  AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   Input,
   NgZone,
-  OnInit,
   ViewChild,
-  inject,
+  inject
 } from '@angular/core';
 
 @Component({
@@ -26,6 +24,8 @@ import {
         <button (click)="triggerHTTP()">Make HTTP call</button>
       </p>
     </div>
+
+    {{onChangeDetection()}}
   `,
   styles: `
     .detecting {
@@ -36,7 +36,7 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NestedNestedComponent implements AfterViewChecked, OnInit {
+export class NestedNestedComponent {
   name = 'Nested Nested Component';
   @Input() someInput = 'Text';
   previousValue = 'Text';
@@ -44,29 +44,13 @@ export class NestedNestedComponent implements AfterViewChecked, OnInit {
   ngZone = inject(NgZone);
   detecting = false;
 
-  ngOnInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-    //   this.ngZone.onMicrotaskEmpty.subscribe(() => this.showCD());
-    });
-  }
-
-  ngAfterViewChecked(): void {
-    this.ngZone.runOutsideAngular(() => {
-      if (this.previousValue !== this.someInput || this.detecting) {
-        this.showCD();
-
-        this.previousValue = this.someInput;
-      }
-    });
-  }
-
   triggerCD() {
-    this.ngZone.runOutsideAngular(() => {
-      this.detecting = true;
-      setTimeout(() => {
-        this.detecting = false;
-      }, 1000);
-    });
+    // this.ngZone.runOutsideAngular(() => {
+    //   this.detecting = true;
+    //   setTimeout(() => {
+    //     this.detecting = false;
+    //   }, 1000);
+    // });
   }
 
   triggerHTTP() {
@@ -75,7 +59,7 @@ export class NestedNestedComponent implements AfterViewChecked, OnInit {
       .then((json) => console.log(json));
   }
 
-  private showCD() {
+  onChangeDetection() {
     if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
       this.rootElementRef?.nativeElement.classList.add('detecting');
     }
@@ -83,5 +67,7 @@ export class NestedNestedComponent implements AfterViewChecked, OnInit {
     setTimeout(() => {
       this.rootElementRef?.nativeElement.classList.remove('detecting');
     }, 1000);
+
+    return '';
   }
 }

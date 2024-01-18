@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, NgZone, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NestedChild1Component } from './nested-child1.component';
 import { NestedChild2Component } from './nested-child2.component';
@@ -20,6 +20,7 @@ import { NestedChild2Component } from './nested-child2.component';
     </div>
     <app-nested-child1/>
     <app-nested-child2 [someInput]="text"/>
+    {{onChangeDetection()}}
   `,
   standalone: true,
   styles: `
@@ -30,13 +31,13 @@ import { NestedChild2Component } from './nested-child2.component';
   `,
   imports: [NestedChild1Component, NestedChild2Component, FormsModule],
 })
-export class ChildComponent implements AfterViewChecked {
+export class ChildComponent {
   name = 'Child Component';
   @ViewChild('root') rootElementRef?: ElementRef<HTMLDivElement>;
   ngZone = inject(NgZone);
   text = 'Text';
 
-  ngAfterViewChecked(): boolean {
+  onChangeDetection() {
     this.ngZone.runOutsideAngular(() => {
       if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
         this.rootElementRef?.nativeElement.classList.add('detecting');
@@ -47,7 +48,7 @@ export class ChildComponent implements AfterViewChecked {
       }, 1000);
     });
 
-    return true;
+    return '';
   }
 
   triggerCD() {}

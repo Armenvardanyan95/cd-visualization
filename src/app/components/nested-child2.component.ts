@@ -1,4 +1,12 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, DoCheck, ElementRef, Input, NgZone, ViewChild, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  NgZone,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { NestedNestedComponent } from './nested-nested.component';
 
 @Component({
@@ -17,7 +25,9 @@ import { NestedNestedComponent } from './nested-nested.component';
       </p>
     </div>
 
-    <app-nested-nested/>
+    <app-nested-nested />
+
+    {{onChangeDetection()}}
   `,
   styles: `
     .detecting {
@@ -29,7 +39,7 @@ import { NestedNestedComponent } from './nested-nested.component';
   imports: [NestedNestedComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NestedChild2Component implements AfterViewChecked {
+export class NestedChild2Component {
   name = 'Nested Child 2 Component';
   @Input() someInput = 'Text';
   previousValue = 'Text';
@@ -37,30 +47,26 @@ export class NestedChild2Component implements AfterViewChecked {
   ngZone = inject(NgZone);
   detecting = false;
 
-  ngAfterViewChecked(): void {
+  onChangeDetection() {
     this.ngZone.runOutsideAngular(() => {
-      if (this.previousValue !== this.someInput || this.detecting) {
-        if (
-          !this.rootElementRef?.nativeElement.classList.contains('detecting')
-        ) {
-          this.rootElementRef?.nativeElement.classList.add('detecting');
-        }
-
-        setTimeout(() => {
-          this.rootElementRef?.nativeElement.classList.remove('detecting');
-        }, 1000);
-
-        this.previousValue = this.someInput;
+      if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
+        this.rootElementRef?.nativeElement.classList.add('detecting');
       }
+
+      setTimeout(() => {
+        this.rootElementRef?.nativeElement.classList.remove('detecting');
+      }, 1000);
+
+      return '';
     });
   }
 
   triggerCD() {
-    this.ngZone.runOutsideAngular(() => {
-      this.detecting = true;
-      setTimeout(() => {
-        this.detecting = false;
-      }, 1000);
-    });
+    // this.ngZone.runOutsideAngular(() => {
+    //   this.detecting = true;
+    //   setTimeout(() => {
+    //     this.detecting = false;
+    //   }, 1000);
+    // });
   }
 }

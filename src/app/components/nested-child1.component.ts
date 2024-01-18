@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, DoCheck, ElementRef, NgZone, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild, inject } from '@angular/core';
 
 @Component({
   selector: `app-nested-child1`,
@@ -14,6 +14,7 @@ import { AfterViewChecked, Component, DoCheck, ElementRef, NgZone, ViewChild, in
         <button (click)="triggerCD()">Trigger!</button>
       </p>
     </div>
+    {{onChangeDetection()}}
   `,
   styles: `
     .detecting {
@@ -23,12 +24,12 @@ import { AfterViewChecked, Component, DoCheck, ElementRef, NgZone, ViewChild, in
   `,
   standalone: true,
 })
-export class NestedChild1Component implements AfterViewChecked {
+export class NestedChild1Component {
   name = 'Nested Child 1 Component';
   @ViewChild('root') rootElementRef?: ElementRef<HTMLDivElement>;
   ngZone = inject(NgZone);
 
-  ngAfterViewChecked(): void {
+  onChangeDetection() {
     this.ngZone.runOutsideAngular(() => {
       if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
         this.rootElementRef?.nativeElement.classList.add('detecting');
@@ -38,6 +39,8 @@ export class NestedChild1Component implements AfterViewChecked {
         this.rootElementRef?.nativeElement.classList.remove('detecting');
       }, 1000);
     });
+
+    return '';
   }
 
   triggerCD() {
