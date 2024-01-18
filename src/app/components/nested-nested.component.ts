@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -42,21 +43,20 @@ export class NestedNestedComponent {
   previousValue = 'Text';
   @ViewChild('root') rootElementRef?: ElementRef<HTMLDivElement>;
   ngZone = inject(NgZone);
+  cdRef = inject(ChangeDetectorRef);
   detecting = false;
 
   triggerCD() {
-    // this.ngZone.runOutsideAngular(() => {
-    //   this.detecting = true;
-    //   setTimeout(() => {
-    //     this.detecting = false;
-    //   }, 1000);
-    // });
+    this.ngZone.runOutsideAngular(() => this.cdRef.detectChanges());
   }
 
   triggerHTTP() {
     fetch('https://jsonplaceholder.typicode.com/todos/1')
       .then((response) => response.json())
-      .then((json) => console.log(json));
+      .then((json) => {
+        console.log(json);
+      });
+
   }
 
   onChangeDetection() {
