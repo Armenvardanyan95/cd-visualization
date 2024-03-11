@@ -4,7 +4,7 @@ import { Component, ElementRef, NgZone, ViewChild, inject } from '@angular/core'
   selector: `app-nested-child1`,
   template: `
     <div class="root" #root>
-      <h2>{{ name }}</h2>
+      <h2 #title>{{ name }}</h2>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam auctor,
         sapien quis tempor vehicula, elit nunc ultrices arcu, vitae consectetur
@@ -27,10 +27,16 @@ import { Component, ElementRef, NgZone, ViewChild, inject } from '@angular/core'
 export class NestedChild1Component {
   name = 'Nested Child 1 Component';
   @ViewChild('root') rootElementRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('title') titleElementRef?: ElementRef<HTMLHeadingElement>;
+  count = 0;
   ngZone = inject(NgZone);
 
   onChangeDetection() {
     this.ngZone.runOutsideAngular(() => {
+      this.count++;
+      if (this.titleElementRef?.nativeElement) {
+        this.titleElementRef.nativeElement.innerText = `${this.name}, Change detected ${this.count} times`;
+      }
       if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
         this.rootElementRef?.nativeElement.classList.add('detecting');
       }

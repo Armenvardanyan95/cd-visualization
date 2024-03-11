@@ -7,7 +7,7 @@ import { NestedChild2Component } from './nested-child2.component';
   selector: `app-child`,
   template: `
     <div #root>
-      <h2>{{ name }}</h2>
+      <h2 #title></h2>
       <input [(ngModel)]="text"/>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam auctor,
@@ -34,11 +34,17 @@ import { NestedChild2Component } from './nested-child2.component';
 export class ChildComponent {
   name = 'Child Component';
   @ViewChild('root') rootElementRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('title') titleElementRef?: ElementRef<HTMLHeadingElement>;
   ngZone = inject(NgZone);
+  count = 0;
   text = 'Text';
 
   onChangeDetection() {
     this.ngZone.runOutsideAngular(() => {
+      this.count++;
+      if (this.titleElementRef?.nativeElement) {
+        this.titleElementRef.nativeElement.innerText = `${this.name}, Change detected ${this.count} times`;
+      }
       if (!this.rootElementRef?.nativeElement.classList.contains('detecting')) {
         this.rootElementRef?.nativeElement.classList.add('detecting');
       }
